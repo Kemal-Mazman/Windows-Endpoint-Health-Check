@@ -55,3 +55,31 @@ try {
 catch {
     Write-Output "Defender | UNKNOWN | $($_.Exception.Message)"
 }
+
+# Check 3: BitLocker
+
+try {
+    $drive = $env:SystemDrive
+    $bitlocker = Get-BitLockerVolume -MountPoint $drive -ErrorAction Stop
+
+    if ($null -eq $bitlocker) {
+        throw "BitLocker information unavailable"
+    }
+
+    $protection = [string]$bitlocker.ProtectionStatus
+
+    if ($protection -eq "On") {
+        $status = "PASS"
+    }
+    elseif ($protection -eq "Off") {
+        $status = "WARN"
+    }
+    else {
+        $status = "UNKNOWN"
+    }
+
+    Write-Output "BitLocker | Drive: $drive | Protection: $protection | $status"
+}
+catch {
+    Write-Output "BitLocker | UNKNOWN | $($_.Exception.Message)"
+}
