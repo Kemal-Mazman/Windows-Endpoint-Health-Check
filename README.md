@@ -47,7 +47,22 @@ Report saved: Health-Report-YYYYMMDD-HHMMSS.txt
 ```
 
 Example account and computer names are anonymised.
+## Test Evidence
 
+### Administrator Test
+All four health checks running with administrator permissions.
+
+![Administrator health check results](screenshots/04-full-admin-check.png)
+
+### Standard User Test
+Demonstrates graceful handling of restricted BitLocker access.
+
+![Non-admin health check results](screenshots/04-full-non-admin-check.png)
+
+### Additional Evidence
+- [Microsoft Defender status](screenshots/02-defender-check.png)
+- [Timestamped report export](screenshots/05-report-export.png)
+  
 ## Testing
 
 Tested on a Windows 10 virtual machine:
