@@ -83,3 +83,29 @@ try {
 catch {
     Write-Output "BitLocker | UNKNOWN | $($_.Exception.Message)"
 }
+
+# Check 4: Local Administrators
+
+try {
+    $admins = @(Get-LocalGroupMember -SID "S-1-5-32-544" -ErrorAction Stop)
+
+    Write-Output "Local Administrators | REVIEW | $($admins.Count) members"
+
+    foreach ($admin in $admins) {
+        $enabled = "Unknown"
+
+        if ($admin.ObjectClass -eq "User" -and $admin.PrincipalSource -eq "Local") {
+            try {
+                $enabled = (Get-LocalUser -SID $admin.SID -ErrorAction Stop).Enabled
+            }
+            catch {
+                $enabled = "Unknown"
+            }
+        }
+
+        Write-Output "  $($admin.Name) | Enabled: $enabled"
+    }
+}
+catch {
+    Write-Output "Local Administrators | UNKNOWN | $($_.Exception.Message)"
+}
