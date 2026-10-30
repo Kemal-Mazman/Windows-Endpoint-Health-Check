@@ -1,4 +1,6 @@
 # Check 1: Disk Space
+$report = Join-Path $PSScriptRoot ("Health-Report-{0}.txt" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+& {
 
 try {
     $drives = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction Stop
@@ -109,3 +111,6 @@ try {
 catch {
     Write-Output "Local Administrators | UNKNOWN | $($_.Exception.Message)"
 }
+
+} | Tee-Object -FilePath $report
+Write-Host "Report saved: $report"
