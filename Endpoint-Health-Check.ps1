@@ -27,3 +27,31 @@ try {
 catch {
     Write-Output "Disk Space | UNKNOWN | $($_.Exception.Message)"
 }
+
+# Check 2: Microsoft Defender
+
+try {
+    $defender = Get-MpComputerStatus -ErrorAction Stop
+
+    $mode = $defender.AMRunningMode
+    $realtime = $defender.RealTimeProtectionEnabled
+    $age = $defender.AntivirusSignatureAge
+
+    if ($mode -eq "Passive Mode") {
+        $status = "REVIEW"
+    }
+    elseif ($null -eq $mode -or $null -eq $realtime -or $null -eq $age) {
+        $status = "UNKNOWN"
+    }
+    elseif (-not $realtime -or $age -gt 3) {
+        $status = "WARN"
+    }
+    else {
+        $status = "PASS"
+    }
+
+    Write-Output "Defender | Mode: $mode | Real-time: $realtime | Signature age: $age days | $status"
+}
+catch {
+    Write-Output "Defender | UNKNOWN | $($_.Exception.Message)"
+}
