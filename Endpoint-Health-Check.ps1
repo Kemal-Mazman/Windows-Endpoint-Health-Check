@@ -1,0 +1,29 @@
+# Check 1: Disk Space
+
+try {
+    $drives = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction Stop
+
+    if (-not $drives) {
+        throw "No fixed drives found"
+    }
+
+    foreach ($drive in $drives) {
+        if ($null -eq $drive.Size -or $drive.Size -le 0 -or $null -eq $drive.FreeSpace) {
+            Write-Output "$($drive.DeviceID) | UNKNOWN | Invalid disk information"
+            continue
+        }
+
+        $free = [math]::Round(($drive.FreeSpace / $drive.Size) * 100, 2)
+
+        if ($free -lt 15) {
+            $status = "WARN"
+        } else {
+            $status = "PASS"
+        }
+
+        Write-Output "$($drive.DeviceID) | $free% free | $status"
+    }
+}
+catch {
+    Write-Output "Disk Space | UNKNOWN | $($_.Exception.Message)"
+}
